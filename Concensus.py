@@ -21,10 +21,11 @@ def inAgreement(S): # takes in a System and sees if the processors are in agreem
     maxState = 0
     minState = 1
     for i in range(len(S.processors)):
-        if S.processors[i].status < minState:
-            minState = S.processors[i].status
-        if S.processors[i].status > maxState:
-            maxState = S.processors[i].status
+        if not S.processors[i].isCrashed:
+            if S.processors[i].status < minState:
+                minState = S.processors[i].status
+            if S.processors[i].status > maxState:
+                maxState = S.processors[i].status
     return maxState - minState <=0.001
 
 # runs the approximate concensus given a system
@@ -44,7 +45,8 @@ def run(S):
         sum = 0
         ave = 0
         for m in range(len(S.processors[k].queue)):
-            sum += S.processors[k].queue[m].status
+            if not S.processors[k].queue[m].isCrashed:
+                sum += S.processors[k].queue[m].status
         if len(S.processors[k].queue) > 0:
             ave += sum/len(S.processors[k].queue)
         else:
@@ -67,13 +69,10 @@ def send(node, S):  # puts node in the message queue of all processors in system
 def recieve(node,S):
     i = 0
     while i < (len(node.queue)):
-        if node.queue[i].isCrashed:
+        if random.random() < S.p:
             node.queue.pop(i)
         else:
-            if random.random() < S.p:
-                node.queue.pop(i)
-            else:
-                i += 1
+            i += 1
 
 
 
