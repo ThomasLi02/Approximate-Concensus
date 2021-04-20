@@ -1,4 +1,5 @@
 import random
+import math
 
 
 class System:
@@ -6,6 +7,12 @@ class System:
         self.processors = []
         self.r = 1
         self.p = float(input("enter probabilty of lost message"))
+        self.crashed = input("enter upper bound fault processors")
+        self.arbitrary = input("enter arbitrary value for fault processors")
+        n = self.processors.len()
+        t = self.crashed
+        c = (n - 2*t - 1)/t + 1
+        self.termRound = math.log((1/0.001),c)
 
 
 class Node:
@@ -47,6 +54,8 @@ def run(S):
         for m in range(len(S.processors[k].queue)):
             if not S.processors[k].queue[m].isCrashed:
                 sum += S.processors[k].queue[m].status
+            else:
+                sum += S.arbtrary
         if len(S.processors[k].queue) > 0:
             ave += sum/len(S.processors[k].queue)
         else:
@@ -55,7 +64,7 @@ def run(S):
     for p in range(len(S.processors)):
         S.processors[p].queue.clear()
     S.r = S.r + 1
-    if not inAgreement(S):  # run again if the processors are not in agreement
+    if not inAgreement(S) or not S.r == S.termRound:  # run again if the processors are not in agreement
         run(S)
 
 
